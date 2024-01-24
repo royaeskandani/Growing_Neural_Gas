@@ -16,13 +16,13 @@ The algorithm begins with the initialization of a set of nodes representing prot
 This implementation of the GNG algorithm is specifically tailored for processing static images. It leverages the algorithm's ability to discover and represent the spatial relationships between pixels in an image. The nodes in the neural gas network adapt to the color clusters and structures present in the image, providing a unique perspective on the organization of visual information.
 
 The application allows for the exploration of the GNG algorithm's behavior in the context of image analysis and understanding. The algorithm's ability to capture the structure of static images makes it a valuable tool for image processing tasks, including segmentation and feature extraction.
-![Growing Neural Gas](mosaic.mp4)
+![Growing Neural Gas](mosaic.gif)
 
 
 ## Extension to Dynamic Images with Utility
 
 Recent updates to the GNG algorithm introduce a novel functionality called "Utility." This enhancement enables the algorithm to be applied to dynamic images, where the underlying structures and features evolve over time. The Utility feature extends the adaptability of GNG to changing visual patterns, making it suitable for a broader range of applications, such as video analysis and real-time image processing.
-![Growing Neural Gas with Utility](fish.mp4)
+![Growing Neural Gas with Utility](fish.gif)
 
 ## Source (Images)
 
