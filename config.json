@@ -1,0 +1,16 @@
+
+{
+  "image_path": "images",
+  "image_prefix": "mosaic",
+  "num_images": 1, 
+  "clustercolor": [0.95, 0.30, 0.09],
+  "tolerance": 0.3,
+  "frames": 6000,
+  "frames_per_ms": 1,
+  "eps_b": 0.5,
+  "eps_N": 0.006,
+  "alpha": 0.5,
+  "beta": 0.05,
+  "lambda": 10,
+  "A_max": 34
+}
