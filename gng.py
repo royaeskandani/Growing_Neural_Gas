@@ -28,11 +28,12 @@ delta_weight_error_q1: float = config['alpha']
 delta_weight_error_q2: float = config['beta']
 lifetime_generation: int = config['lambda']
 max_edge_age: int = config['A_max']
+fac_memory: int = config['k']
 
 
 n_nodes: int = 2
 i_gng: int = 0
-def gng(G: nx.Graph, img: np.array) -> None:
+def gng(G: nx.Graph, img: np.array, utility: bool=True) -> None:
   global i_gng, n_nodes
   # 0. Preprocessing
   # 0.1. Image
@@ -50,6 +51,9 @@ def gng(G: nx.Graph, img: np.array) -> None:
   if len(new_node_color) != 3: 
     print(f'Interruption: The image does not have 3 color channels.')
     sys.exit(1)
+  if color_tolerance < 0.1:
+    print(f'Interruption: Color Tolerance too small.')
+    sys.exit(1)
   while np.linalg.norm(new_node_color - color) > color_tolerance: 
     new_node = np.random.randint([0, 0], [width, height], size=(2,))
     new_node_color: np.array = img[new_node[1], new_node[0]]
@@ -62,6 +66,8 @@ def gng(G: nx.Graph, img: np.array) -> None:
     indicies += [node]
   indicies = [x for _, x in sorted(zip(distances, indicies))]  
   s1, s2 = indicies[:2]
+
+  G.nodes[s1]['utility'] += np.linalg.norm(new_node - G.nodes[s2]['pos'])**2 + np.linalg.norm(new_node - G.nodes[s1]['pos'])**2
   
   # 1.2. Add new Edge
   G.add_edge(s1, s2, weight=0.0)
@@ -79,6 +85,9 @@ def gng(G: nx.Graph, img: np.array) -> None:
   # 1.8. Update Egde Ages
   for neighbour in G[s1]:
     G[s1][neighbour]['weight'] += 1
+  if utility:
+    for u,v in G.edges():
+      G[u][v]['weight'] += 1
 
   # 1.9. Delete aged Egdes and isolated Nodes
   edges_copy = list(G.edges())
@@ -98,7 +107,20 @@ def gng(G: nx.Graph, img: np.array) -> None:
     q1 = max(G.nodes, key=lambda node: G.nodes[node]['error'])
     q2 = max(G.neighbors(q1), key=lambda node: G.nodes[node]['error'])
     pos = (G.nodes[q1]['pos'] + G.nodes[q2]['pos']) // 2
-    G.add_node(n_nodes, pos=pos, error=random.random() * np.finfo(float).eps)
+    G.add_node(n_nodes, pos=pos, error=random.random() * np.finfo(float).eps, utility=100)
     # print(f'add node: {n_nodes}, {G.nodes[n_nodes]}')
   
+  # 1.11. Utility
+  for node in G.nodes():
+    G.nodes[node]['utility'] *= (1 - delta_weight_error_q2)
+
+  if G.number_of_nodes() > 2:
+    q_E = max(G.nodes, key=lambda node: G.nodes[node]['error'])
+    q_u = max(G.nodes, key=lambda node: G.nodes[node]['utility'])
+    # print(q_u, G.nodes[q_u])
+    if G.nodes[q_u]['utility'] < q_E / fac_memory:
+      # print(f"remove node: {q_u}, {G.nodes[q_u]}")
+      G.remove_node(q_u)
+      G.remove_edges_from(G.edges(q_u))
+
   i_gng += 1
