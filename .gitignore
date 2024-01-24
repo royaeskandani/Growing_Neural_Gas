@@ -1,0 +1,11 @@
+# environment
+bin/
+lib/
+pyvenv.cfg
+
+# mac
+.DS_Store
+images/.DS_Store
+
+# git
+Algorithm.pdf
